@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Menu, X, MapPin, Smartphone, Activity, Heart, Search, ArrowRight, ChevronDown, ChevronUp, Star, Moon, Sun, Loader2, CheckCircle, AlertCircle, ScanLine } from 'lucide-react';
+import { ShoppingBag, Menu, X, MapPin, Smartphone, Activity, Heart, Search, ArrowRight, ChevronDown, Star, Moon, Sun, CheckCircle, AlertCircle, ScanLine } from 'lucide-react';
 
 // --- CONSTANTES Y DATOS ---
 
@@ -11,48 +11,104 @@ const BRAND_COLORS = {
   white: '#ffffff'
 };
 
+const BRAND_INFO = {
+  brandName: 'GLOBALPET',
+  legalName: 'Globalpet 360 S.L.',
+  ownerName: 'Marta Navarro Campos',
+  slogan: 'Amor que se nota en cada huella',
+  addressLine: 'Calle Mauricio Moro Pareto, 11',
+  cityLine: '29006, Malaga',
+  locationRefs: 'Junto al Centro Comercial Eroski y Vialia',
+  localSize: '180m2'
+};
+
 const PRODUCTS = [
   {
     id: 1,
-    name: "NutriTail Hypo Sensitive",
+    name: "Pienso hipoalergenico",
     category: "Alimentación",
-    price: "14,95€",
+    salePrice: "26,65 €",
     image: "https://placehold.co/400x400/def8c3/1f2937?text=NutriTail+Hypo",
-    description: "Pienso hipoalergénico sin cereales. Elaborado con proteínas hidrolizadas, ideal para digestiones sensibles.",
+    description: "Alimento completo para perros y gatos con intolerancias o alergias comunes. Sin cereales, colorantes ni conservantes artificiales.",
     tag: "Top Ventas"
   },
   {
     id: 2,
-    name: "Dermapaws Anti-Caspa",
-    category: "Higiene",
-    price: "14,95€",
-    image: "https://placehold.co/400x400/c0eff6/1f2937?text=Dermapaws",
-    description: "Champú dermatológico con Aloe Vera y Zinc. Calma el picor y regenera la barrera cutánea.",
-    tag: "Recomendado"
+    name: "Pienso normal",
+    category: "Alimentación",
+    salePrice: "26,65 €",
+    image: "https://placehold.co/400x400/c0eff6/1f2937?text=Pienso+Normal",
+    description: "Pienso completo con salmon, pollo o ternera, grasas saludables, fibras moderadas y bajos carbohidratos.",
+    tag: "Diario"
   },
   {
     id: 3,
-    name: "Kit StarDog Junior",
+    name: "Champu anticaspa",
+    category: "Higiene",
+    salePrice: "17,32 €",
+    image: "https://placehold.co/400x400/c0eff6/1f2937?text=Dermapaws",
+    description: "Champu dermatologico para pieles con caspa, escamas o picores. Con ingredientes calmantes como aloe vera y aceite de arbol del te.",
+    tag: "Recomendado"
+  },
+  {
+    id: 4,
+    name: "Champu normal",
+    category: "Higiene",
+    salePrice: "25,99 €",
+    image: "https://placehold.co/400x400/def8c3/1f2937?text=Champu+Normal",
+    description: "Champu de argan para limpieza en profundidad, apto para distintos tamanos y razas.",
+    tag: "Cuidado"
+  },
+  {
+    id: 5,
+    name: "Juguetes de estimulacion",
+    category: "Accesorios",
+    salePrice: "21,32 €",
+    image: "https://placehold.co/400x400/d8bf9f/1f2937?text=Juguetes",
+    description: "Juguetes para estimular habilidades cognitivas, con materiales resistentes a mordidas y aranazos.",
+    tag: "Estimulación"
+  },
+  {
+    id: 6,
+    name: "Kit Junior",
     category: "Kits",
-    price: "30,00€",
+    salePrice: "32,80 €",
     image: "https://placehold.co/400x400/d8bf9f/1f2937?text=Kit+Cachorro",
-    description: "El pack de bienvenida perfecto: Pienso, pipeta, juguete seguro y acceso VIP a la App.",
+    description: "Pack de primeros dias con alimentacion, antiparasitario, juguete, QR de App y guia rapida.",
     tag: "Kit Inicio"
+  },
+  {
+    id: 7,
+    name: "Kit alergico",
+    category: "Kits",
+    salePrice: "39,65 €",
+    image: "https://placehold.co/400x400/c0eff6/1f2937?text=Kit+Alergico",
+    description: "Pack con pienso y champu hipoalergenico, QR para la App y guia rapida especializada.",
+    tag: "Especializado"
+  },
+  {
+    id: 8,
+    name: "Kit senior",
+    category: "Kits",
+    salePrice: "42,71 €",
+    image: "https://placehold.co/400x400/def8c3/1f2937?text=Kit+Senior",
+    description: "Pack para mascotas senior con pienso adaptado, suplemento articular, QR de App y guia rapida.",
+    tag: "Senior"
   }
 ];
 
 const FAQS = [
   {
     question: "¿Cómo funciona la cabina Mi PetCheck?",
-    answer: "Es una cabina acristalada de alta tecnología que realiza un escaneo no invasivo de tu mascota. Analiza el estado del pelaje, peso y posibles alergias cutáneas en pocos minutos, mientras tu mascota te ve en todo momento."
+    answer: "Es un servicio gratuito de analisis interno y externo de la mascota. Evalua alergias, tipo de pelaje y otros indicadores para orientar el cuidado."
   },
   {
-    question: "¿El pienso NutriTail sirve para todas las razas?",
-    answer: "Sí, está formulado para cubrir las necesidades nutricionales de perros de todas las razas, especialmente aquellos con estómagos sensibles o intolerancias a los cereales."
+    question: "¿Es obligatorio comprar un kit para usar la App?",
+    answer: "No. El QR de acceso a la App se facilita al comprar cualquier articulo en tienda o al usar Mi PetCheck."
   },
   {
-    question: "¿Es necesaria la App para comprar?",
-    answer: "No es obligatoria, pero con ella puedes crear el historial médico de tu mascota, acumular puntos y recibir recordatorios de vacunación y desparasitación."
+    question: "¿Como distribuye Globalpet sus productos?",
+    answer: "Con canal directo en tienda fisica y canal corto con furgoneta para reparto de pedidos online en Malaga."
   }
 ];
 
@@ -240,7 +296,7 @@ const HomePage = ({ navigateTo }) => (
             Amor que se nota en <span className="text-[#d8bf9f]">cada huella</span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-lg mx-auto md:mx-0 transition-colors">
-            Más que una tienda, somos un centro de bienestar 360° con tecnología avanzada para la salud de tu mejor amigo.
+            Mas que una tienda, somos un centro de bienestar 360 con analisis personalizado y acompanamiento real para cada mascota.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
             <Button onClick={() => navigateTo('shop')}>
@@ -253,10 +309,11 @@ const HomePage = ({ navigateTo }) => (
         </div>
         <div className="md:w-1/2 relative">
           <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-8 border-white dark:border-gray-700 transform rotate-2 hover:rotate-0 transition-all duration-500">
-             <img 
+              <img
                src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=2069&auto=format&fit=crop" 
                alt="Perro feliz" 
                className="w-full h-auto object-cover"
+               loading="eager"
              />
           </div>
           {/* Decorative Elements */}
@@ -272,7 +329,7 @@ const HomePage = ({ navigateTo }) => (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
             { icon: <Activity size={40} />, title: "Salud Integral", desc: "Nutrición experta y cuidado dermatológico.", color: "bg-[#def8c3]" },
-            { icon: <Smartphone size={40} />, title: "Tecnología Smart", desc: "App propia para el seguimiento de historial.", color: "bg-[#c0eff6]" },
+            { icon: <Smartphone size={40} />, title: "Tecnología Smart", desc: "App gratuita con acceso por QR para seguimiento.", color: "bg-[#c0eff6]" },
             { icon: <Heart size={40} />, title: "Cariño Real", desc: "Espacios transparentes y trato cercano.", color: "bg-[#d8bf9f]" }
           ].map((item, idx) => (
             <div key={idx} className="p-8 rounded-2xl bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gray-100 dark:hover:border-gray-600 group">
@@ -294,7 +351,7 @@ const HomePage = ({ navigateTo }) => (
           <div className="md:w-1/2 relative z-10">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-800 dark:text-white">Innovación: <span className="text-[#c0eff6] bg-gray-800 dark:bg-gray-700 px-2 rounded">Mi PetCheck</span></h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 transition-colors">
-              Nuestra cabina de análisis de última generación. Paredes de cristal para que tu mascota nunca te pierda de vista. Análisis de piel, peso y salud en minutos.
+              Mi PetCheck es un servicio gratuito conectado a la App para centralizar resultados, seguimiento y recomendaciones de cuidado.
             </p>
             <Button variant="secondary" onClick={() => navigateTo('demo')}>
               Ver Demo Interactiva <ArrowRight size={20} />
@@ -302,7 +359,7 @@ const HomePage = ({ navigateTo }) => (
           </div>
           <div className="md:w-1/2">
              <div className="aspect-video bg-gray-200 dark:bg-gray-800 rounded-xl flex items-center justify-center text-gray-400 relative overflow-hidden group cursor-pointer" onClick={() => navigateTo('demo')}>
-                <img src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?q=80&w=2070&auto=format&fit=crop" alt="Veterinaria tecnología" className="object-cover w-full h-full opacity-80 group-hover:scale-105 transition-transform duration-700" />
+                <img src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?q=80&w=2070&auto=format&fit=crop" alt="Veterinaria tecnología" className="object-cover w-full h-full opacity-80 group-hover:scale-105 transition-transform duration-700" loading="lazy" />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/30 transition-colors">
                    <div className="bg-white/20 backdrop-blur-sm p-4 rounded-full border border-white/50">
                      <Activity size={32} className="text-white" />
@@ -326,7 +383,7 @@ const ShopPage = ({ navigateTo, setProductDetail }) => (
       
       {/* Filters (Mock) */}
       <div className="flex flex-wrap gap-4 justify-center mb-12">
-        {['Todos', 'Alimentación', 'Higiene', 'Kits'].map((filter, idx) => (
+        {['Todos', 'Alimentación', 'Higiene', 'Accesorios', 'Kits'].map((filter, idx) => (
           <button key={idx} className={`px-6 py-2 rounded-full border transition-colors ${idx === 0 ? 'bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 border-gray-800 dark:border-gray-200' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-[#c0eff6] dark:hover:border-[#c0eff6]'}`}>
             {filter}
           </button>
@@ -337,7 +394,7 @@ const ShopPage = ({ navigateTo, setProductDetail }) => (
         {PRODUCTS.map((product) => (
           <div key={product.id} className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl dark:shadow-none transition-all duration-300 group border border-transparent dark:border-gray-700">
             <div className="relative h-64 overflow-hidden bg-gray-100 dark:bg-gray-700">
-              <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
               <span className="absolute top-4 left-4 bg-[#c0eff6] text-gray-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">
                 {product.tag}
               </span>
@@ -347,7 +404,11 @@ const ShopPage = ({ navigateTo, setProductDetail }) => (
               <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">{product.name}</h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">{product.description}</p>
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                <span className="text-2xl font-bold text-gray-800 dark:text-[#c0eff6]">{product.price}</span>
+                {product.salePrice ? (
+                  <span className="text-2xl font-bold text-gray-800 dark:text-[#c0eff6]">{product.salePrice}</span>
+                ) : (
+                  <span className="text-sm font-semibold text-gray-500 dark:text-gray-300">Consultar en tienda</span>
+                )}
                 <button 
                   onClick={() => { setProductDetail(product); navigateTo('product-detail'); }}
                   className="bg-[#def8c3] hover:bg-[#c9f0a0] text-gray-800 p-3 rounded-full transition-colors"
@@ -383,10 +444,14 @@ const ProductDetailPage = ({ product, navigateTo }) => {
               {product.category}
             </span>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white mt-4 mb-4 transition-colors">{product.name}</h1>
-            <p className="text-3xl text-gray-800 dark:text-[#c0eff6] font-medium mb-6 transition-colors">{product.price}</p>
+            {product.salePrice ? (
+              <p className="text-3xl text-gray-800 dark:text-[#c0eff6] font-medium mb-6 transition-colors">{product.salePrice}</p>
+            ) : (
+              <p className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-300 mb-6">Precio disponible en tienda</p>
+            )}
             
             <p className="text-gray-600 dark:text-gray-300 text-lg mb-8 leading-relaxed transition-colors">
-              {product.description} Este producto ha sido seleccionado rigurosamente por nuestros veterinarios para garantizar la máxima calidad y seguridad para tu mascota.
+              {product.description} Seleccionado para aportar bienestar real y continuidad de cuidado junto a Mi PetCheck y la App Globalpet.
             </p>
 
             <div className="space-y-4 mb-8">
@@ -421,12 +486,12 @@ const ServicesPage = ({ navigateTo }) => (
             <h2 className="text-4xl font-bold mb-6 text-[#c0eff6]">Mi PetCheck</h2>
             <h3 className="text-2xl mb-6">Tecnología transparente para su salud.</h3>
             <p className="text-gray-300 mb-8 leading-relaxed">
-              Olvídate del estrés en el veterinario. Nuestra cabina "Mi PetCheck" está diseñada con cristal de seguridad transparente. Tu mascota te ve en todo momento, reduciendo la ansiedad, mientras nuestros sensores analizan su peso, pelaje y posibles alergias.
+              Servicio gratuito que analiza salud interna y externa de la mascota, desde alergias hasta tipo de pelaje, con seguimiento continuo en la App.
             </p>
             <ul className="space-y-4 mb-8">
-              <li className="flex items-center gap-3"><span className="text-[#def8c3]">✓</span> Análisis de dermatología</li>
-              <li className="flex items-center gap-3"><span className="text-[#def8c3]">✓</span> Control de peso y morfología</li>
-              <li className="flex items-center gap-3"><span className="text-[#def8c3]">✓</span> Sin estrés, visualización 360°</li>
+              <li className="flex items-center gap-3"><span className="text-[#def8c3]">✓</span> Analisis de alergias y pelaje</li>
+              <li className="flex items-center gap-3"><span className="text-[#def8c3]">✓</span> Recomendacion de cuidado personalizada</li>
+              <li className="flex items-center gap-3"><span className="text-[#def8c3]">✓</span> Resultados accesibles desde la App</li>
             </ul>
             <div className="flex gap-4 flex-wrap">
               <Button variant="secondary">Reservar Cita Ahora</Button>
@@ -437,7 +502,7 @@ const ServicesPage = ({ navigateTo }) => (
           </div>
           <div className="bg-gray-800 relative min-h-[400px]">
              {/* Mock visual of booth */}
-             <img src="https://images.unsplash.com/photo-1623366302587-b38b1ddaefd9?q=80&w=1925&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-60" alt="Tech pet" />
+             <img src="https://images.unsplash.com/photo-1623366302587-b38b1ddaefd9?q=80&w=1925&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-60" alt="Tech pet" loading="lazy" />
           </div>
         </div>
       </div>
@@ -452,9 +517,9 @@ const ServicesPage = ({ navigateTo }) => (
             </div>
         </div>
         <div className="md:w-1/2">
-          <SectionTitle title="Globalpet App" subtitle="El historial de tu mejor amigo en tu bolsillo." />
+          <SectionTitle title="Globalpet App" subtitle="Resultados, historial y seguimiento en tu bolsillo." />
           <p className="text-gray-600 dark:text-gray-300 mb-6 transition-colors">
-            Descarga nuestra aplicación gratuita al adquirir tu Kit StarDog. Crea perfiles de salud, recibe recordatorios de vacunas y obtén consejos personalizados basados en los análisis de la cabina.
+            La App es gratuita y se activa con QR. Puedes acceder al historial, revisar resultados de Mi PetCheck y gestionar pedidos online de productos.
           </p>
           <div className="flex gap-4">
             <button className="bg-black dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-gray-800 dark:hover:bg-gray-200 transition">
@@ -464,6 +529,23 @@ const ServicesPage = ({ navigateTo }) => (
               <span className="text-xs">Get it on</span> <br/> <span className="font-bold text-lg">Google Play</span>
             </button>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="container mx-auto px-4 mb-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-3xl p-8 border border-gray-100 dark:border-gray-700 transition-colors">
+          <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Canal directo</h3>
+          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+            Atencion en tienda fisica para seleccion de productos y recomendacion con soporte de Mi PetCheck.
+          </p>
+        </div>
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-3xl p-8 border border-gray-100 dark:border-gray-700 transition-colors">
+          <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Canal corto</h3>
+          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+            Reparto con furgoneta para pedidos online en Malaga, pensado para clientes que priorizan comodidad.
+          </p>
         </div>
       </div>
     </section>
@@ -500,7 +582,7 @@ const AboutPage = () => (
       <div className="max-w-4xl mx-auto text-center mb-16">
         <h1 className="text-5xl font-bold mb-6 text-gray-800 dark:text-white transition-colors">Sobre Globalpet</h1>
         <p className="text-xl text-gray-600 dark:text-gray-300 transition-colors">
-          Nacimos con una misión clara: elevar el estándar del cuidado de mascotas uniendo el amor incondicional con la tecnología más avanzada.
+          Nacimos con una mision clara: elevar el estandar del cuidado de mascotas uniendo cercania, tecnologia y seguimiento continuo.
         </p>
       </div>
 
@@ -508,7 +590,7 @@ const AboutPage = () => (
         <div className="bg-[#d8bf9f] rounded-3xl p-10 text-white flex flex-col justify-center shadow-lg">
           <h2 className="text-3xl font-bold mb-4">Nuestra Historia</h2>
           <p className="leading-relaxed opacity-90">
-            Globalpet 360 no es solo una tienda. Es el resultado de años de investigación sobre cómo mejorar la calidad de vida de nuestros compañeros. Nos dimos cuenta de que faltaba transparencia en el sector y herramientas que permitieran a los dueños entender realmente la salud de sus mascotas.
+            Globalpet 360 nace para integrar alimentacion, higiene, accesorios y analisis en un mismo espacio. El objetivo es que cada familia entienda mejor la salud de su mascota y tome decisiones con informacion.
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-3xl p-10 shadow-lg border border-gray-100 dark:border-gray-700 transition-colors">
@@ -517,16 +599,17 @@ const AboutPage = () => (
               <h2 className="text-3xl font-bold text-gray-800 dark:text-white transition-colors">Visítanos</h2>
            </div>
            <p className="text-gray-600 dark:text-gray-300 mb-6 transition-colors">
-             Estamos ubicados en el corazón de Málaga, en una zona accesible para que vengas paseando con tu peludo.
+             Estamos en Malaga capital, junto a Eroski y Vialia, en un local de 180m2 orientado al bienestar integral.
            </p>
            <div className="bg-gray-100 dark:bg-gray-700 rounded-xl p-6 mb-4 transition-colors">
-             <p className="font-bold text-gray-800 dark:text-white">Calle Mauricio Moro Pareto</p>
-             <p className="text-gray-600 dark:text-gray-300">Junto al Centro Comercial Eroski / Vialia</p>
-             <p className="text-gray-600 dark:text-gray-300">29006, Málaga</p>
+             <p className="font-bold text-gray-800 dark:text-white">{BRAND_INFO.addressLine}</p>
+             <p className="text-gray-600 dark:text-gray-300">{BRAND_INFO.locationRefs}</p>
+             <p className="text-gray-600 dark:text-gray-300">{BRAND_INFO.cityLine}</p>
+             <p className="text-gray-600 dark:text-gray-300">Superficie del local: {BRAND_INFO.localSize}</p>
            </div>
            {/* Mock Map */}
            <div className="w-full h-48 bg-gray-300 dark:bg-gray-600 rounded-xl relative overflow-hidden group cursor-pointer">
-              <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1748&auto=format&fit=crop" className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition" alt="Mapa" />
+              <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1748&auto=format&fit=crop" className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition" alt="Mapa" loading="lazy" />
               <div className="absolute inset-0 flex items-center justify-center">
                  <button className="bg-white dark:bg-gray-800 dark:text-white px-4 py-2 rounded shadow text-sm font-bold hover:scale-105 transition-transform">Ver en Google Maps</button>
               </div>
@@ -579,7 +662,7 @@ const App = () => {
               <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#c0eff6] to-[#def8c3] flex items-center justify-center group-hover:scale-110 transition-transform">
                 <span className="text-xl">🐾</span>
               </div>
-              <span className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white transition-colors">GLOBALPET</span>
+              <span className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white transition-colors">{BRAND_INFO.brandName}</span>
             </div>
 
             {/* Desktop Menu */}
@@ -674,10 +757,10 @@ const App = () => {
                   <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#c0eff6] to-[#def8c3] flex items-center justify-center">
                      <span className="text-sm">🐾</span>
                   </div>
-                  <span className="text-xl font-bold">GLOBALPET</span>
+                  <span className="text-xl font-bold">{BRAND_INFO.brandName}</span>
                 </div>
                 <p className="text-gray-400 text-sm leading-relaxed">
-                  Cuidado integral, tecnología y amor para tu mascota. Visítanos en Málaga y descubre una nueva forma de entender el bienestar animal.
+                  Cuidado integral, tecnologia y amor para tu mascota en Malaga. Seguimiento real desde tienda, Mi PetCheck y App.
                 </p>
               </div>
               
@@ -704,7 +787,7 @@ const App = () => {
               <div>
                 <h4 className="font-bold mb-6 text-[#d8bf9f]">Contacto</h4>
                 <ul className="space-y-3 text-sm text-gray-400">
-                  <li className="flex items-center gap-2"><MapPin size={16}/> C/ Mauricio Moro Pareto, Málaga</li>
+                  <li className="flex items-center gap-2"><MapPin size={16}/> {BRAND_INFO.addressLine}, Malaga</li>
                   <li className="flex items-center gap-2"><Smartphone size={16}/> +34 952 000 000</li>
                   <li className="flex items-center gap-2">@ hola@globalpet360.com</li>
                 </ul>
@@ -712,7 +795,7 @@ const App = () => {
             </div>
             
             <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
-              <p>&copy; 2024 Globalpet 360 S.L. Todos los derechos reservados.</p>
+              <p>&copy; 2026 {BRAND_INFO.legalName}. Todos los derechos reservados.</p>
               <div className="flex gap-4 mt-4 md:mt-0">
                  <span>Instagram</span>
                  <span>Facebook</span>
