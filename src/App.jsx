@@ -150,26 +150,35 @@ const SectionTitle = ({ title, subtitle }) => (
 const AnalysisDemo = () => {
   const [status, setStatus] = useState('idle'); // idle, scanning, analyzing, results
   const [progress, setProgress] = useState(0);
-  const [scanText, setScanText] = useState("Iniciando escáner...");
+  const scanText = progress >= 80
+    ? "Calculando índice de masa corporal..."
+    : progress >= 50
+      ? "Analizando dermis y pigmentación..."
+      : progress >= 20
+        ? "Escaneando densidad de pelaje..."
+        : "Iniciando escáner...";
 
   useEffect(() => {
-    if (status === 'scanning') {
-      const interval = setInterval(() => {
-        setProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            setStatus('results');
-            return 100;
-          }
-          // Cambiar texto basado en progreso
-          if (prev === 20) setScanText("Escaneando densidad de pelaje...");
-          if (prev === 50) setScanText("Analizando dermis y pigmentación...");
-          if (prev === 80) setScanText("Calculando índice de masa corporal...");
-          return prev + 2;
-        });
-      }, 100);
-      return () => clearInterval(interval);
-    }
+    if (status !== 'scanning') return undefined;
+
+    const durationMs = 5000;
+    const startTime = performance.now();
+    let animationFrameId;
+
+    const tick = (now) => {
+      const elapsed = now - startTime;
+      const nextProgress = Math.min(100, Math.round((elapsed / durationMs) * 100));
+      setProgress(nextProgress);
+
+      if (nextProgress < 100) {
+        animationFrameId = window.requestAnimationFrame(tick);
+      } else {
+        setStatus('results');
+      }
+    };
+
+    animationFrameId = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(animationFrameId);
   }, [status]);
 
   const startScan = () => {
