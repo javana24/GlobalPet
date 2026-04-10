@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Menu, X, MapPin, Smartphone, Activity, Heart, Search, ArrowRight, ChevronDown, Star, Moon, Sun, CheckCircle, AlertCircle, ScanLine } from 'lucide-react';
+import { ShoppingBag, Menu, X, MapPin, Smartphone, Activity, Heart, ArrowRight, ChevronDown, Star, Moon, Sun, CheckCircle, AlertCircle, ScanLine } from 'lucide-react';
 
 // --- CONSTANTES Y DATOS ---
 
@@ -22,13 +22,20 @@ const BRAND_INFO = {
   localSize: '180m2'
 };
 
+const parsePriceToNumber = (priceText) => {
+  if (!priceText) return 0;
+  const cleaned = priceText.replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.');
+  const value = Number.parseFloat(cleaned);
+  return Number.isNaN(value) ? 0 : value;
+};
+
 const PRODUCTS = [
   {
     id: 1,
     name: "Pienso hipoalergenico",
     category: "Alimentación",
     salePrice: "26,65 €",
-    image: "https://placehold.co/400x400/def8c3/1f2937?text=NutriTail+Hypo",
+    image: "https://images.unsplash.com/photo-1583512603806-077998240c7a?q=80&w=1200&auto=format&fit=crop",
     description: "Alimento completo para perros y gatos con intolerancias o alergias comunes. Sin cereales, colorantes ni conservantes artificiales.",
     tag: "Top Ventas"
   },
@@ -37,7 +44,7 @@ const PRODUCTS = [
     name: "Pienso normal",
     category: "Alimentación",
     salePrice: "26,65 €",
-    image: "https://placehold.co/400x400/c0eff6/1f2937?text=Pienso+Normal",
+    image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?q=80&w=1200&auto=format&fit=crop",
     description: "Pienso completo con salmon, pollo o ternera, grasas saludables, fibras moderadas y bajos carbohidratos.",
     tag: "Diario"
   },
@@ -46,7 +53,7 @@ const PRODUCTS = [
     name: "Champu anticaspa",
     category: "Higiene",
     salePrice: "17,32 €",
-    image: "https://placehold.co/400x400/c0eff6/1f2937?text=Dermapaws",
+    image: "https://images.unsplash.com/photo-1527526029430-319f10814151?q=80&w=1200&auto=format&fit=crop",
     description: "Champu dermatologico para pieles con caspa, escamas o picores. Con ingredientes calmantes como aloe vera y aceite de arbol del te.",
     tag: "Recomendado"
   },
@@ -55,7 +62,7 @@ const PRODUCTS = [
     name: "Champu normal",
     category: "Higiene",
     salePrice: "25,99 €",
-    image: "https://placehold.co/400x400/def8c3/1f2937?text=Champu+Normal",
+    image: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?q=80&w=1200&auto=format&fit=crop",
     description: "Champu de argan para limpieza en profundidad, apto para distintos tamanos y razas.",
     tag: "Cuidado"
   },
@@ -64,7 +71,7 @@ const PRODUCTS = [
     name: "Juguetes de estimulacion",
     category: "Accesorios",
     salePrice: "21,32 €",
-    image: "https://placehold.co/400x400/d8bf9f/1f2937?text=Juguetes",
+    image: "https://images.unsplash.com/photo-1450778869180-41d0601e046e?q=80&w=1200&auto=format&fit=crop",
     description: "Juguetes para estimular habilidades cognitivas, con materiales resistentes a mordidas y aranazos.",
     tag: "Estimulación"
   },
@@ -73,7 +80,7 @@ const PRODUCTS = [
     name: "Kit Junior",
     category: "Kits",
     salePrice: "32,80 €",
-    image: "https://placehold.co/400x400/d8bf9f/1f2937?text=Kit+Cachorro",
+    image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1200&auto=format&fit=crop",
     description: "Pack de primeros dias con alimentacion, antiparasitario, juguete, QR de App y guia rapida.",
     tag: "Kit Inicio"
   },
@@ -82,7 +89,7 @@ const PRODUCTS = [
     name: "Kit alergico",
     category: "Kits",
     salePrice: "39,65 €",
-    image: "https://placehold.co/400x400/c0eff6/1f2937?text=Kit+Alergico",
+    image: "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=1200&auto=format&fit=crop",
     description: "Pack con pienso y champu hipoalergenico, QR para la App y guia rapida especializada.",
     tag: "Especializado"
   },
@@ -91,7 +98,7 @@ const PRODUCTS = [
     name: "Kit senior",
     category: "Kits",
     salePrice: "42,71 €",
-    image: "https://placehold.co/400x400/def8c3/1f2937?text=Kit+Senior",
+    image: "https://images.unsplash.com/photo-1574158622682-e40e69881006?q=80&w=1200&auto=format&fit=crop",
     description: "Pack para mascotas senior con pienso adaptado, suplemento articular, QR de App y guia rapida.",
     tag: "Senior"
   }
@@ -373,23 +380,23 @@ const HomePage = ({ navigateTo }) => (
   </div>
 );
 
-const ShopPage = ({ navigateTo, setProductDetail }) => (
-  <div className="pt-24 pb-20 animate-fade-in bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
-    <div className="container mx-auto px-4">
+const ShopPage = ({ navigateTo, setProductDetail, addToCart, toggleFavorite, favoriteIds }) => {
+  const [animatedProductId, setAnimatedProductId] = useState(null);
+
+  const handleAddToCart = (product) => {
+    addToCart(product);
+    setAnimatedProductId(product.id);
+    window.setTimeout(() => setAnimatedProductId(null), 280);
+  };
+
+  return (
+    <div className="pt-24 pb-20 animate-fade-in bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
+      <div className="container mx-auto px-4">
       <SectionTitle 
         title="Nuestra Selección" 
         subtitle="Productos formulados por expertos para el bienestar de tu mascota."
       />
       
-      {/* Filters (Mock) */}
-      <div className="flex flex-wrap gap-4 justify-center mb-12">
-        {['Todos', 'Alimentación', 'Higiene', 'Accesorios', 'Kits'].map((filter, idx) => (
-          <button key={idx} className={`px-6 py-2 rounded-full border transition-colors ${idx === 0 ? 'bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 border-gray-800 dark:border-gray-200' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-[#c0eff6] dark:hover:border-[#c0eff6]'}`}>
-            {filter}
-          </button>
-        ))}
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {PRODUCTS.map((product) => (
           <div key={product.id} className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl dark:shadow-none transition-all duration-300 group border border-transparent dark:border-gray-700">
@@ -409,23 +416,53 @@ const ShopPage = ({ navigateTo, setProductDetail }) => (
                 ) : (
                   <span className="text-sm font-semibold text-gray-500 dark:text-gray-300">Consultar en tienda</span>
                 )}
-                <button 
-                  onClick={() => { setProductDetail(product); navigateTo('product-detail'); }}
-                  className="bg-[#def8c3] hover:bg-[#c9f0a0] text-gray-800 p-3 rounded-full transition-colors"
-                >
-                  <ArrowRight size={20} />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => toggleFavorite(product.id)}
+                    className="p-3 rounded-full border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    aria-label="Toggle favorito"
+                  >
+                    <Heart
+                      size={18}
+                      className={favoriteIds.includes(product.id) ? 'text-red-500' : ''}
+                      fill={favoriteIds.includes(product.id) ? 'currentColor' : 'none'}
+                    />
+                  </button>
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    className={`bg-[#def8c3] hover:bg-[#c9f0a0] text-gray-800 p-3 rounded-full transition-all duration-200 ${animatedProductId === product.id ? 'scale-110 ring-2 ring-[#aee6ef]' : 'scale-100'}`}
+                    aria-label="Agregar al carrito"
+                  >
+                    <ShoppingBag size={18} />
+                  </button>
+                  <button 
+                    onClick={() => { setProductDetail(product); navigateTo('product-detail'); }}
+                    className="bg-[#c0eff6] hover:bg-[#aee6ef] text-gray-800 p-3 rounded-full transition-colors"
+                    aria-label="Ver detalle"
+                  >
+                    <ArrowRight size={18} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         ))}
       </div>
     </div>
-  </div>
-);
+    </div>
+  );
+};
 
-const ProductDetailPage = ({ product, navigateTo }) => {
+const ProductDetailPage = ({ product, navigateTo, addToCart, toggleFavorite, favoriteIds }) => {
+  const [isAdding, setIsAdding] = useState(false);
+
   if (!product) return null;
+
+  const handleAddToCart = () => {
+    addToCart(product);
+    setIsAdding(true);
+    window.setTimeout(() => setIsAdding(false), 280);
+  };
 
   return (
     <div className="pt-32 pb-20 animate-fade-in bg-white dark:bg-gray-900 min-h-screen transition-colors">
@@ -466,9 +503,73 @@ const ProductDetailPage = ({ product, navigateTo }) => {
             </div>
 
             <div className="flex gap-4">
-              <Button className="flex-1">Añadir al Carrito</Button>
-              <Button variant="outline"><Heart size={20} /></Button>
+              <Button className={`flex-1 transition-all duration-200 ${isAdding ? 'scale-105 ring-2 ring-[#aee6ef]' : 'scale-100'}`} onClick={handleAddToCart}>Añadir al Carrito</Button>
+              <Button variant="outline" onClick={() => toggleFavorite(product.id)}>
+                <Heart size={20} className={favoriteIds.includes(product.id) ? 'text-red-500' : ''} fill={favoriteIds.includes(product.id) ? 'currentColor' : 'none'} />
+              </Button>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CartPage = ({ cartItems, navigateTo, increaseCartItem, decreaseCartItem, removeCartItem }) => {
+  const subtotal = cartItems.reduce((acc, item) => {
+    const unitPrice = parsePriceToNumber(item.product.salePrice);
+    return acc + (unitPrice * item.quantity);
+  }, 0);
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="pt-24 pb-20 animate-fade-in bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
+        <div className="container mx-auto px-4 max-w-3xl text-center">
+          <SectionTitle title="Tu carrito" subtitle="Aun no has agregado productos." />
+          <Button onClick={() => navigateTo('shop')}>Ir a la tienda</Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pt-24 pb-20 animate-fade-in bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors">
+      <div className="container mx-auto px-4 max-w-5xl">
+        <SectionTitle title="Tu carrito" subtitle="Gestiona tus productos seleccionados." />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-4">
+            {cartItems.map((item) => (
+              <div key={item.product.id} className="bg-white dark:bg-gray-800 rounded-2xl p-4 md:p-6 border border-gray-100 dark:border-gray-700 flex gap-4">
+                <img src={item.product.image} alt={item.product.name} className="w-24 h-24 rounded-xl object-cover" loading="lazy" />
+                <div className="flex-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{item.product.category}</p>
+                  <h3 className="text-lg font-bold text-gray-800 dark:text-white">{item.product.name}</h3>
+                  <p className="text-[#1f2937] dark:text-[#c0eff6] font-semibold mt-1">{item.product.salePrice || 'Consultar en tienda'}</p>
+                  <div className="flex items-center gap-2 mt-3">
+                    <button onClick={() => decreaseCartItem(item.product.id)} className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">-</button>
+                    <span className="min-w-8 text-center text-gray-700 dark:text-gray-200 font-semibold">{item.quantity}</span>
+                    <button onClick={() => increaseCartItem(item.product.id)} className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">+</button>
+                    <button onClick={() => removeCartItem(item.product.id)} className="ml-4 text-sm font-medium text-red-500 hover:text-red-600 transition-colors">Eliminar</button>
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                    Total: {(parsePriceToNumber(item.product.salePrice) * item.quantity).toFixed(2).replace('.', ',')} €
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 h-fit">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Resumen</h3>
+            <div className="flex items-center justify-between text-gray-600 dark:text-gray-300 mb-3">
+              <span>Productos</span>
+              <span>{cartItems.reduce((acc, item) => acc + item.quantity, 0)}</span>
+            </div>
+            <div className="flex items-center justify-between text-gray-800 dark:text-white text-lg font-bold border-t border-gray-100 dark:border-gray-700 pt-4">
+              <span>Subtotal</span>
+              <span>{subtotal.toFixed(2).replace('.', ',')} €</span>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">No incluye compra online en esta version.</p>
+            <Button className="w-full mt-6" onClick={() => navigateTo('shop')}>Seguir comprando</Button>
           </div>
         </div>
       </div>
@@ -623,9 +724,11 @@ const AboutPage = () => (
 // --- APP COMPONENT MAIN ---
 
 const App = () => {
-  const [currentPage, setCurrentPage] = useState('home'); // home, shop, services, about, product-detail, demo
+  const [currentPage, setCurrentPage] = useState('home'); // home, shop, services, about, product-detail, demo, cart
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [cartQuantities, setCartQuantities] = useState({});
+  const [favoriteIds, setFavoriteIds] = useState([]);
   
   // Theme State
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -639,6 +742,57 @@ const App = () => {
     setMobileMenuOpen(false);
     window.scrollTo(0, 0);
   };
+
+  const addToCart = (product) => {
+    setCartQuantities((prev) => ({
+      ...prev,
+      [product.id]: (prev[product.id] || 0) + 1
+    }));
+  };
+
+  const increaseCartItem = (productId) => {
+    setCartQuantities((prev) => ({
+      ...prev,
+      [productId]: (prev[productId] || 0) + 1
+    }));
+  };
+
+  const decreaseCartItem = (productId) => {
+    setCartQuantities((prev) => {
+      const currentQty = prev[productId] || 0;
+      if (currentQty <= 1) {
+        const { [productId]: _REMOVED, ...rest } = prev;
+        return rest;
+      }
+      return {
+        ...prev,
+        [productId]: currentQty - 1
+      };
+    });
+  };
+
+  const removeCartItem = (productId) => {
+    setCartQuantities((prev) => {
+      const { [productId]: _REMOVED, ...rest } = prev;
+      return rest;
+    });
+  };
+
+  const toggleFavorite = (productId) => {
+    setFavoriteIds((prev) => (
+      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
+    ));
+  };
+
+  const cartItems = Object.entries(cartQuantities)
+    .map(([id, quantity]) => {
+      const product = PRODUCTS.find((item) => item.id === Number(id));
+      if (!product || quantity <= 0) return null;
+      return { product, quantity };
+    })
+    .filter(Boolean);
+
+  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const navLinks = [
     { id: 'home', label: 'Inicio' },
@@ -689,13 +843,9 @@ const App = () => {
                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
               </button>
 
-              <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
-                <Search size={20} className="text-gray-600 dark:text-gray-300" />
-              </button>
-              
-              <button className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+              <button onClick={() => navigateTo('cart')} className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
                 <ShoppingBag size={20} className="text-gray-600 dark:text-gray-300" />
-                <span className="absolute top-0 right-0 w-4 h-4 bg-[#d8bf9f] text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
+                <span className="absolute top-0 right-0 min-w-4 h-4 px-1 bg-[#d8bf9f] text-white text-[10px] font-bold rounded-full flex items-center justify-center">{cartCount}</span>
               </button>
               
               <Button className="px-5 py-2 text-sm" onClick={() => navigateTo('services')}>
@@ -705,6 +855,10 @@ const App = () => {
 
             {/* Mobile Toggle */}
             <div className="flex items-center gap-4 md:hidden">
+              <button onClick={() => navigateTo('cart')} className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+                <ShoppingBag size={20} className="text-gray-600 dark:text-gray-300" />
+                <span className="absolute top-0 right-0 min-w-4 h-4 px-1 bg-[#d8bf9f] text-white text-[10px] font-bold rounded-full flex items-center justify-center">{cartCount}</span>
+              </button>
               <button 
                 onClick={toggleTheme} 
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors text-gray-600 dark:text-gray-300"
@@ -741,10 +895,35 @@ const App = () => {
         {/* Main Content */}
         <main className="flex-grow pt-20">
           {currentPage === 'home' && <HomePage navigateTo={navigateTo} />}
-          {currentPage === 'shop' && <ShopPage navigateTo={navigateTo} setProductDetail={setSelectedProduct} />}
+          {currentPage === 'shop' && (
+            <ShopPage
+              navigateTo={navigateTo}
+              setProductDetail={setSelectedProduct}
+              addToCart={addToCart}
+              toggleFavorite={toggleFavorite}
+              favoriteIds={favoriteIds}
+            />
+          )}
           {currentPage === 'services' && <ServicesPage navigateTo={navigateTo} />}
           {currentPage === 'about' && <AboutPage />}
-          {currentPage === 'product-detail' && <ProductDetailPage product={selectedProduct} navigateTo={navigateTo} />}
+          {currentPage === 'product-detail' && (
+            <ProductDetailPage
+              product={selectedProduct}
+              navigateTo={navigateTo}
+              addToCart={addToCart}
+              toggleFavorite={toggleFavorite}
+              favoriteIds={favoriteIds}
+            />
+          )}
+          {currentPage === 'cart' && (
+            <CartPage
+              cartItems={cartItems}
+              navigateTo={navigateTo}
+              increaseCartItem={increaseCartItem}
+              decreaseCartItem={decreaseCartItem}
+              removeCartItem={removeCartItem}
+            />
+          )}
           {currentPage === 'demo' && <AnalysisDemo onComplete={() => {}} />}
         </main>
 
